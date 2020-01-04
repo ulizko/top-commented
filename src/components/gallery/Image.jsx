@@ -14,7 +14,11 @@ export default class Image extends Component {
         <div className="card-body">
           <h5 className="card-title">{title}</h5>
           <p className="card-text">Number of comments: {num_comments}</p>
-          <a href={permalink} target="_blank" rel="noopener noreferrer">
+          <a
+            href={`https://reddit.com${permalink}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Link
           </a>
         </div>
