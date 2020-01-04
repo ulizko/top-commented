@@ -8,11 +8,19 @@ export default class ImagesList extends Component {
     this.state = {
       images: [],
       loaded: false,
+      interval: null,
     };
   }
 
   componentDidMount() {
     this.getImages();
+  }
+
+  componentWillUnmount() {
+    const { interval } = this.state;
+    if (interval) {
+      clearInterval(interval);
+    }
   }
 
   toImage = ({ data: { thumbnail, title, num_comments, permalink, id } }) => {
@@ -46,13 +54,40 @@ export default class ImagesList extends Component {
         });
       });
   };
+
+  startAutoRefresh = () => {
+    const interval = setInterval(this.getImages, 3000);
+    this.setState({
+      interval,
+    });
+  };
+
+  stopAutoRefresh = () => {
+    clearInterval(this.state.interval);
+    this.setState({ interval: null });
+  };
+
+  onRefresh = () => {
+    if (this.state.interval) {
+      this.stopAutoRefresh();
+    } else {
+      this.startAutoRefresh();
+    }
+  };
+
   render() {
-    const { images, loaded } = this.state;
+    const { images, loaded, interval } = this.state;
     return (
-      <div className="row">
-        {loaded
-          ? images.map(image => <Image key={image.id} image={image} />)
-          : 'Loading...'}
+      <div>
+        <button onClick={this.onRefresh}>
+          {interval ? 'Stop auto-refresh' : 'Start auto-refresh'}
+        </button>
+
+        <div className="row">
+          {loaded
+            ? images.map(image => <Image key={image.id} image={image} />)
+            : 'Loading...'}
+        </div>
       </div>
     );
   }
